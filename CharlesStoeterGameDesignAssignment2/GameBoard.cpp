@@ -11,9 +11,11 @@ GameBoard::GameBoard() {
 
 
 void GameBoard::resetBoard() {
-    for (int i = 0; i < 5; ++i)
-        for (int j = 0; j < 5; ++j)
+    for (int i = 0; i < 5; ++i) {
+        for (int j = 0; j < 5; ++j) {
             revealed[i][j] = false;
+        }
+    }
 }
 
 
@@ -35,37 +37,72 @@ void GameBoard::randomizeBoard() {
     }
 
     int idx = 0;
-    for (int i = 0; i < 5; ++i)
-        for (int j = 0; j < 5; ++j)
+    for (int i = 0; i < 5; ++i) {
+        for (int j = 0; j < 5; ++j) {
+            if (i == 4 && j == 4) {
+                board[i][j] = EMPTY; // explicitly mark bottom-right as empty
+                continue;
+            }
             board[i][j] = pairs[idx++];
+        }
+    }
 }
 
 Shape GameBoard::getShapeAt(int row, int col) {
-    if (row >= 0 && row < 5 && col >= 0 && col < 5)
+    if (row >= 0 && row < 5 && col >= 0 && col < 5) {
         return board[row][col];
+
+    }
     return EMPTY;
 }
 
 bool GameBoard::isRevealed(int row, int col) {
-    if (row >= 0 && row < 5 && col >= 0 && col < 5)
-        return revealed[row][col];
+    if (row >= 0 && row < 5 && col >= 0 && col < 5) {
+                return revealed[row][col];
+
+    }
     return false;
 }
 
 void GameBoard::reveal(int row, int col) {
-    if (row >= 0 && row < 5 && col >= 0 && col < 5)
+    if (row >= 0 && row < 5 && col >= 0 && col < 5) {
         revealed[row][col] = true;
+
+    }
 }
 
 void GameBoard::hide(int row, int col) {
-    if (row >= 0 && row < 5 && col >= 0 && col < 5)
+    if (row >= 0 && row < 5 && col >= 0 && col < 5) {
         revealed[row][col] = false;
+
+    }
 }
 
 bool GameBoard::allMatched() {
-    for (int i = 0; i < 5; ++i)
-        for (int j = 0; j < 5; ++j)
-            if (board[i][j] != EMPTY && !revealed[i][j])
+    for (int i = 0; i < 5; ++i) {
+        for (int j = 0; j < 5; ++j) {
+            if (board[i][j] != EMPTY && !revealed[i][j]) {
                 return false;
+
+            }
+        }
+            
+    }
+        
+
     return true;
+
+}
+
+// Increment the count of matched pairs
+void GameBoard::incrementMatchCount() {
+    matchedPairs++;
+}
+
+int GameBoard::getMatchedPairs() const {
+    return matchedPairs;
+}
+
+int GameBoard::getRemainingPairs() const {
+    return 12 - matchedPairs;
 }

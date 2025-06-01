@@ -18,8 +18,13 @@ public:
     void reveal(int row, int col);
     void hide(int row, int col);
     bool allMatched();
+    void incrementMatchCount();
+    int getMatchedPairs() const;
+    int getRemainingPairs() const;
 
 private:
-    Shape board[5][5];           // stores shapes
-    bool revealed[5][5];         // stores whether the shape is shown or not
+    Shape board[5][5];           
+    bool revealed[5][5];         
+	int matchedPairs = 0; // keeps track of matched pairs
+    
 };

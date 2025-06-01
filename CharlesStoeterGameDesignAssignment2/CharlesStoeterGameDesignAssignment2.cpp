@@ -8,6 +8,7 @@
 #include "GameBoard.h"
 #include <direct.h>
 #include <fstream>
+#include <sstream>
 
 //global x and global y for mouse clicks
 int mx = 0;
@@ -105,18 +106,22 @@ int main()
 			int row = my / CELL_SIZE;
 			int col = mx / CELL_SIZE;
 
-			if (row < GRID_SIZE && col < GRID_SIZE && !board.isRevealed(row, col)) {
-				if (firstRow == -1 && firstCol == -1) {
-					firstRow = row;
-					firstCol = col;
-					board.reveal(row, col);
-				}
-				else if (secondRow == -1 && secondCol == -1) {
-					secondRow = row;
-					secondCol = col;
-					board.reveal(row, col);
-					checkingMatch = true;
-				}
+			// Skip invalid or duplicate clicks
+			if (row >= GRID_SIZE || col >= GRID_SIZE) continue;
+			if (board.isRevealed(row, col)) continue;
+			if (row == firstRow && col == firstCol) continue;
+
+			// Process click
+			if (firstRow == -1 && firstCol == -1) {
+				firstRow = row;
+				firstCol = col;
+				board.reveal(row, col);
+			}
+			else if (secondRow == -1 && secondCol == -1) {
+				secondRow = row;
+				secondCol = col;
+				board.reveal(row, col);
+				checkingMatch = true;
 			}
 
 			redraw = true;
@@ -145,7 +150,45 @@ int main()
 			}
 			al_draw_text(font, al_map_rgb(255, 255, 255), 10, 10, 0, "Memory Game");
 
+			int matched = board.getMatchedPairs();
+			int remaining = board.getRemainingPairs();
+
+			std::string status = "Matched: " + std::to_string(matched) + "\nLeft: " + std::to_string(remaining);
+
+			al_draw_text(font, al_map_rgb(255, 255, 255), SCREEN_WIDTH - 200, SCREEN_HEIGHT - 60, 0, status.c_str());
+
+
 			al_flip_display();
+
+
+			if (checkingMatch) {
+				Shape shape1 = board.getShapeAt(firstRow, firstCol);
+				Shape shape2 = board.getShapeAt(secondRow, secondCol);
+
+				if (shape1 == shape2) {
+					std::cout << "Match.\n";
+					// keep both revealed
+				}
+				else {
+					std::cout << "No match.\n";
+
+					al_rest(5.0); 
+
+
+					board.hide(firstRow, firstCol);
+					board.hide(secondRow, secondCol);
+				}
+
+				board.incrementMatchCount();
+
+				// Reset guesses
+				firstRow = -1;
+				firstCol = -1;
+				secondRow = -1;
+				secondCol = -1;
+				checkingMatch = false;
+				redraw = true; // trigger redraw
+			}
 		}
 	}
 
