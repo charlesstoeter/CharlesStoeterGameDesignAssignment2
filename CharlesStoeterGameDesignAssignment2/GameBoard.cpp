@@ -50,3 +50,10 @@ void GameBoard::hide(int row, int col) {
     revealed[row][col] = false;
 }
 
+bool GameBoard::allMatched() {
+    for (int i = 0; i < 5; ++i)
+        for (int j = 0; j < 5; ++j)
+            if (board[i][j] != EMPTY && !revealed[i][j])
+                return false;
+    return true;
+}
