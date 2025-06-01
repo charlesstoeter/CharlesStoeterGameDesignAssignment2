@@ -33,6 +33,7 @@ int main()
 
 
 
+
 	// Your game logic here
 	al_shutdown_primitives_addon();
 	al_shutdown_ttf_addon();
