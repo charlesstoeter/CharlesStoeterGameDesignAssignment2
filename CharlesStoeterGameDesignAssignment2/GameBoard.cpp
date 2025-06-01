@@ -26,7 +26,13 @@ void GameBoard::randomizeBoard() {
     }
     pairs.push_back(EMPTY); // One empty cell for status in bottom-right
 
-    std::shuffle(pairs.begin(), pairs.end(), std::default_random_engine());
+    std::random_device rd;
+    std::mt19937 g(rd());
+    std::shuffle(pairs.begin(), pairs.end(), g);
+
+    if (pairs.size() != 25) {
+        throw std::runtime_error("Pairs vector size must be 25!");
+    }
 
     int idx = 0;
     for (int i = 0; i < 5; ++i)
@@ -35,19 +41,25 @@ void GameBoard::randomizeBoard() {
 }
 
 Shape GameBoard::getShapeAt(int row, int col) {
-    return board[row][col];
+    if (row >= 0 && row < 5 && col >= 0 && col < 5)
+        return board[row][col];
+    return EMPTY;
 }
 
 bool GameBoard::isRevealed(int row, int col) {
-    return revealed[row][col];
+    if (row >= 0 && row < 5 && col >= 0 && col < 5)
+        return revealed[row][col];
+    return false;
 }
 
 void GameBoard::reveal(int row, int col) {
-    revealed[row][col] = true;
+    if (row >= 0 && row < 5 && col >= 0 && col < 5)
+        revealed[row][col] = true;
 }
 
 void GameBoard::hide(int row, int col) {
-    revealed[row][col] = false;
+    if (row >= 0 && row < 5 && col >= 0 && col < 5)
+        revealed[row][col] = false;
 }
 
 bool GameBoard::allMatched() {
