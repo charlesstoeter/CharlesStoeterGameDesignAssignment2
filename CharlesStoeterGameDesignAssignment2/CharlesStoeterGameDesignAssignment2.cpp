@@ -13,14 +13,24 @@
 int mx = 0;
 int my = 0;
 
+
+// Enum for different shapes
+void drawShape(Shape shape, float cx, float cy, float size);
+
+
 int main()
 {
+
 
 	//Constants
 	const int SCREEN_WIDTH = 800;
 	const int SCREEN_HEIGHT = 800;
 	const int GRID_SIZE = 5; // 5x5 board
 	const int CELL_SIZE = SCREEN_WIDTH / GRID_SIZE; // Size of each cell in the board
+
+
+
+	
 
 	// Initialize Allegro
 	if (!al_init()) {
@@ -72,6 +82,12 @@ int main()
 	bool redraw = true;
 
 
+	//variables to track the first and second  cells
+	int firstRow = -1, firstCol = -1;
+	int secondRow = -1, secondCol = -1;
+	bool checkingMatch = false;
+
+
 
 	GameBoard board;
 
@@ -89,8 +105,18 @@ int main()
 			int row = my / CELL_SIZE;
 			int col = mx / CELL_SIZE;
 
-			if (row < GRID_SIZE && col < GRID_SIZE) {
-				board.reveal(row, col);
+			if (row < GRID_SIZE && col < GRID_SIZE && !board.isRevealed(row, col)) {
+				if (firstRow == -1 && firstCol == -1) {
+					firstRow = row;
+					firstCol = col;
+					board.reveal(row, col);
+				}
+				else if (secondRow == -1 && secondCol == -1) {
+					secondRow = row;
+					secondCol = col;
+					board.reveal(row, col);
+					checkingMatch = true;
+				}
 			}
 
 			redraw = true;
@@ -112,8 +138,8 @@ int main()
 						al_map_rgb(255, 255, 255), 2);
 
 					if (board.isRevealed(i, j)) {
-						// Replace this with shape-drawing logic
-						al_draw_filled_circle(cx, cy, 25, al_map_rgb(255, 0, 0));
+						Shape shape = board.getShapeAt(i, j);
+						drawShape(shape, cx, cy, CELL_SIZE * 0.6f);
 					}
 				}
 			}
@@ -134,5 +160,53 @@ int main()
 
 	return 0;
 
+}
+
+void drawShape(Shape shape, float cx, float cy, float size) {
+	if (shape == CIRCLE) {
+		al_draw_filled_circle(cx, cy, size / 2, al_map_rgb(255, 0, 0));
+	}
+
+	else if (shape == RECTANGLE) {
+		al_draw_filled_rectangle(cx - size / 2, cy - size / 2,
+			cx + size / 2, cy + size / 2,
+			al_map_rgb(0, 255, 0));
+	}
+
+	else if (shape == OVAL) {
+		al_draw_filled_ellipse(cx, cy, size / 2, size / 3, al_map_rgb(0, 0, 255));
+	}
+
+	else if (shape == TRIANGLE) {
+		al_draw_filled_triangle(cx, cy - size / 2,
+			cx - size / 2, cy + size / 2,
+			cx + size / 2, cy + size / 2,
+			al_map_rgb(255, 255, 0));
+	}
+
+	else if (shape == DIAMOND) {
+		float points[] = {
+			cx, cy - size / 2,
+			cx - size / 2, cy,
+			cx, cy + size / 2,
+			cx + size / 2, cy
+		};
+		al_draw_filled_polygon(points, 4, al_map_rgb(255, 0, 255));
+	}
+
+	else if (shape == OCTAGON) {
+		float s = size / 2.5;
+		float points[] = {
+			cx - s / 2, cy - s,
+			cx + s / 2, cy - s,
+			cx + s, cy - s / 2,
+			cx + s, cy + s / 2,
+			cx + s / 2, cy + s,
+			cx - s / 2, cy + s,
+			cx - s, cy + s / 2,
+			cx - s, cy - s / 2
+		};
+		al_draw_filled_polygon(points, 8, al_map_rgb(255, 165, 0));
+	}
 }
 
