@@ -144,7 +144,9 @@ int main()
 
 					if (board.isRevealed(i, j)) {
 						Shape shape = board.getShapeAt(i, j);
-						drawShape(shape, cx, cy, CELL_SIZE * 0.6f);
+						if (shape != EMPTY) {
+							drawShape(shape, cx, cy, CELL_SIZE * 0.6f);
+						}
 					}
 				}
 			}
@@ -245,18 +247,10 @@ void drawShape(Shape shape, float cx, float cy, float size) {
 	}
 
 	else if (shape == OCTAGON) {
-		float s = size / 2.5;
-		float points[] = {
-			cx - s / 2, cy - s,
-			cx + s / 2, cy - s,
-			cx + s, cy - s / 2,
-			cx + s, cy + s / 2,
-			cx + s / 2, cy + s,
-			cx - s / 2, cy + s,
-			cx - s, cy + s / 2,
-			cx - s, cy - s / 2
-		};
-		al_draw_filled_polygon(points, 8, al_map_rgb(255, 165, 0));
+		al_draw_filled_rectangle(cx - size / 3, cy - size / 3, cx + size / 3, cy + size / 3, al_map_rgb(255, 255, 255));
+	}
+	else {
+		std::cout << "Unknown shape ID: " << shape << std::endl;
 	}
 }
 

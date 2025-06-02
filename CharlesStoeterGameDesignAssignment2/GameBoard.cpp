@@ -2,6 +2,7 @@
 #include <algorithm>
 #include <random>
 #include <vector>
+#include <iostream>
 
 //constructor
 GameBoard::GameBoard() { 
@@ -22,32 +23,52 @@ void GameBoard::resetBoard() {
 void GameBoard::randomizeBoard() {
     std::vector<Shape> pairs;
 
-    for (int i = 0; i < 12; ++i) {
-        pairs.push_back(static_cast<Shape>(i % NUM_SHAPES)); // repeat shapes if NUM_SHAPES < 12
-        pairs.push_back(static_cast<Shape>(i % NUM_SHAPES));
+    // Add 4 of each shape (6 * 4 = 24)
+    for (int i = 0; i < NUM_SHAPES; ++i) {
+        for (int j = 0; j < 4; ++j) {
+            pairs.push_back(static_cast<Shape>(i));
+        }
     }
-    
-	pairs.push_back(EMPTY); 
 
+    int counts[NUM_SHAPES] = { 0 };
+    for (Shape s : pairs) {
+        if (s >= 0 && s < NUM_SHAPES)
+            counts[s]++;
+    }
+
+    std::cout << "Shape counts:\n";
+    for (int i = 0; i < NUM_SHAPES; ++i) {
+        std::cout << "Shape " << i << ": " << counts[i] << "\n";
+    }
+
+    // Shuffle the 24 shapes
     std::random_device rd;
     std::mt19937 g(rd());
     std::shuffle(pairs.begin(), pairs.end(), g);
 
-    if (pairs.size() != 25) {
-        throw std::runtime_error("Pairs vector size must be 25!");
-    }
-
+    // Fill the board, leaving (4,4) as EMPTY
     int idx = 0;
     for (int i = 0; i < 5; ++i) {
         for (int j = 0; j < 5; ++j) {
             if (i == 4 && j == 4) {
-                board[i][j] = EMPTY; // explicitly mark bottom-right as empty
-                continue;
+                board[i][j] = EMPTY;
             }
-            board[i][j] = pairs[idx++];
+            else {
+                board[i][j] = pairs[idx++];
+            }
         }
     }
+
+    // Debug output AFTER board is filled
+    std::cout << "Randomized Board:\n";
+    for (int i = 0; i < 5; ++i) {
+        for (int j = 0; j < 5; ++j) {
+            std::cout << static_cast<int>(board[i][j]) << "\t";
+        }
+        std::cout << std::endl;
+    }
 }
+
 
 Shape GameBoard::getShapeAt(int row, int col) {
     if (row >= 0 && row < 5 && col >= 0 && col < 5) {

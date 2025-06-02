@@ -3,9 +3,13 @@
 
 enum Shape {
     EMPTY = -1,
-    OCTAGON, TRIANGLE, DIAMOND, RECTANGLE,
-    OVAL, CIRCLE,
-    NUM_SHAPES // should equal 6 / total number of actual shapes
+    OCTAGON = 0,
+    TRIANGLE = 1,
+    DIAMOND = 2,
+    RECTANGLE = 3,
+    OVAL = 4,
+    CIRCLE = 5,
+    NUM_SHAPES = 6
 };
 
 class GameBoard {
