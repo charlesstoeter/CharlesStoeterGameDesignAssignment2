@@ -26,7 +26,7 @@ void GameBoard::randomizeBoard() {
         pairs.push_back(static_cast<Shape>(i % NUM_SHAPES)); // repeat shapes if NUM_SHAPES < 12
         pairs.push_back(static_cast<Shape>(i % NUM_SHAPES));
     }
-    pairs.push_back(EMPTY); // One empty cell for status in bottom-right
+    
 
     std::random_device rd;
     std::mt19937 g(rd());
@@ -108,11 +108,16 @@ int GameBoard::getRemainingPairs() const {
 }
 
 bool GameBoard::compare(int row1, int col1, int row2, int col2) {
-    if (getShapeAt(row1, col1) == getShapeAt(row2, col2)) {
-        return true;
+    // Don't allow comparing the same cell
+    if (row1 == row2 && col1 == col2) {
+        return false;
     }
-        
-    return false;
+
+    // Return true if the shapes in the two different cells match
+    Shape shape1 = getShapeAt(row1, col1);
+    Shape shape2 = getShapeAt(row2, col2);
+
+    return shape1 == shape2;
 }
 
 void GameBoard::resetGame() {
@@ -120,4 +125,6 @@ void GameBoard::resetGame() {
     randomizeBoard();
     matchedPairs = 0; // reset match count
 }
+
+
 
