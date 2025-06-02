@@ -27,6 +27,7 @@ void GameBoard::randomizeBoard() {
         pairs.push_back(static_cast<Shape>(i % NUM_SHAPES));
     }
     
+	pairs.push_back(EMPTY); 
 
     std::random_device rd;
     std::mt19937 g(rd());

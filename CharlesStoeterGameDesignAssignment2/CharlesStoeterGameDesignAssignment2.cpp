@@ -166,6 +166,7 @@ int main()
 				Shape shape2 = board.getShapeAt(secondRow, secondCol);
 
 				if (board.compare(firstRow, firstCol, secondRow, secondCol)) {
+					board.incrementMatchCount();
 					std::cout << "Match.\n";
 					// keep both revealed
 				}
@@ -185,7 +186,7 @@ int main()
 					board.resetGame();
 				}
 
-				board.incrementMatchCount();
+				
 
 				// Reset guesses
 				firstRow = -1;
