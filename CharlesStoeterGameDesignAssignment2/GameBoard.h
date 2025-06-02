@@ -5,7 +5,7 @@ enum Shape {
     EMPTY = -1,
     OCTAGON, TRIANGLE, DIAMOND, RECTANGLE,
     OVAL, CIRCLE,
-    NUM_SHAPES // should equal 6
+    NUM_SHAPES // should equal 6 / total number of actual shapes
 };
 
 class GameBoard {
@@ -21,6 +21,8 @@ public:
     void incrementMatchCount();
     int getMatchedPairs() const;
     int getRemainingPairs() const;
+    bool compare(int row1, int col1, int row2, int col2);
+    void resetGame();
 
 private:
     Shape board[5][5];           

@@ -106,3 +106,18 @@ int GameBoard::getMatchedPairs() const {
 int GameBoard::getRemainingPairs() const {
     return 12 - matchedPairs;
 }
+
+bool GameBoard::compare(int row1, int col1, int row2, int col2) {
+    if (getShapeAt(row1, col1) == getShapeAt(row2, col2)) {
+        return true;
+    }
+        
+    return false;
+}
+
+void GameBoard::resetGame() {
+    resetBoard();
+    randomizeBoard();
+    matchedPairs = 0; // reset match count
+}
+

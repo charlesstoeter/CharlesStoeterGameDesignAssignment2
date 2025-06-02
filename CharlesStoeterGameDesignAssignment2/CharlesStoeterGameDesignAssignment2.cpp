@@ -165,7 +165,7 @@ int main()
 				Shape shape1 = board.getShapeAt(firstRow, firstCol);
 				Shape shape2 = board.getShapeAt(secondRow, secondCol);
 
-				if (shape1 == shape2) {
+				if (board.compare(firstRow, firstCol, secondRow, secondCol)) {
 					std::cout << "Match.\n";
 					// keep both revealed
 				}
@@ -177,6 +177,12 @@ int main()
 
 					board.hide(firstRow, firstCol);
 					board.hide(secondRow, secondCol);
+				}
+
+				if (board.allMatched()) {
+					std::cout << "All pairs matched. Resetting game.\n";
+					al_rest(2.0); // short pause
+					board.resetGame();
 				}
 
 				board.incrementMatchCount();
