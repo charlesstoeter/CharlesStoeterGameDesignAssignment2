@@ -10,7 +10,7 @@ GameBoard::GameBoard() {
     randomizeBoard();
 }
 
-
+//reset the board to all false
 void GameBoard::resetBoard() {
     for (int i = 0; i < 5; ++i) {
         for (int j = 0; j < 5; ++j) {
@@ -19,7 +19,7 @@ void GameBoard::resetBoard() {
     }
 }
 
-
+// Randomize the board with 24 shapes (4 of each type) and leave (4,4) as empty( for later)
 void GameBoard::randomizeBoard() {
     std::vector<Shape> pairs;
 
@@ -69,7 +69,7 @@ void GameBoard::randomizeBoard() {
     }
 }
 
-
+// Get the shape at a specific cell
 Shape GameBoard::getShapeAt(int row, int col) {
     if (row >= 0 && row < 5 && col >= 0 && col < 5) {
         return board[row][col];
@@ -78,6 +78,7 @@ Shape GameBoard::getShapeAt(int row, int col) {
     return EMPTY;
 }
 
+// Check if a cell is revealed
 bool GameBoard::isRevealed(int row, int col) {
     if (row >= 0 && row < 5 && col >= 0 && col < 5) {
                 return revealed[row][col];
@@ -86,6 +87,7 @@ bool GameBoard::isRevealed(int row, int col) {
     return false;
 }
 
+// Reveal a cell at (row, col)
 void GameBoard::reveal(int row, int col) {
     if (row >= 0 && row < 5 && col >= 0 && col < 5) {
         revealed[row][col] = true;
@@ -93,6 +95,8 @@ void GameBoard::reveal(int row, int col) {
     }
 }
 
+
+// Hide a cell at (row, col)
 void GameBoard::hide(int row, int col) {
     if (row >= 0 && row < 5 && col >= 0 && col < 5) {
         revealed[row][col] = false;
@@ -100,6 +104,10 @@ void GameBoard::hide(int row, int col) {
     }
 }
 
+
+
+
+// Check if all pairs are matched (all shapes are revealed except the empty cell)
 bool GameBoard::allMatched() {
     for (int i = 0; i < 5; ++i) {
         for (int j = 0; j < 5; ++j) {
@@ -142,6 +150,10 @@ bool GameBoard::compare(int row1, int col1, int row2, int col2) {
     return shape1 == shape2;
 }
 
+
+
+
+// Reset the game by resetting the board and randomizing it again
 void GameBoard::resetGame() {
     resetBoard();
     randomizeBoard();

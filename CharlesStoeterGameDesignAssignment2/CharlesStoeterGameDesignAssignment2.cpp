@@ -1,4 +1,4 @@
-﻿// CharlesStoeterGameDesignAssignment2.cpp : This file contains the 'main' function. Program execution begins and ends there.
+﻿
 
 #include <allegro5/allegro.h>
 #include <allegro5/allegro_font.h>
@@ -15,7 +15,7 @@ int mx = 0;
 int my = 0;
 
 
-// Enum for different shapes
+// enum for different shapes
 void drawShape(Shape shape, float cx, float cy, float size);
 
 
@@ -23,7 +23,7 @@ int main()
 {
 
 
-	//Constants
+	//constants
 	const int SCREEN_WIDTH = 800;
 	const int SCREEN_HEIGHT = 800;
 	const int GRID_SIZE = 5; // 5x5 board
@@ -33,7 +33,7 @@ int main()
 
 	
 
-	// Initialize Allegro
+	// Initialize Allegro and addons
 	if (!al_init()) {
 		std::cerr << "Failed to initialize Allegro!" << std::endl;
 		return -1;
@@ -79,6 +79,10 @@ int main()
 
 	al_start_timer(timer);
 
+
+
+	// main game loop
+
 	bool running = true;
 	bool redraw = true;
 
@@ -93,69 +97,155 @@ int main()
 	GameBoard board;
 
 	while (running) {
+
 		ALLEGRO_EVENT ev;
+
 		al_wait_for_event(event_queue, &ev);
 
+		// handle exit
 		if (ev.type == ALLEGRO_EVENT_DISPLAY_CLOSE) {
 			running = false;
 		}
+		// handle mouse click
 		else if (ev.type == ALLEGRO_EVENT_MOUSE_BUTTON_DOWN) {
+
+
 			mx = ev.mouse.x;
 			my = ev.mouse.y;
 
 			int row = my / CELL_SIZE;
 			int col = mx / CELL_SIZE;
 
-			// Skip invalid or duplicate clicks
+
+
+			// Check if submit button (bottom-right corner) was clicked
+
+
+			if (row == 4 && col == 4) {
+				if (firstRow != -1 && secondRow != -1) {
+					checkingMatch = true;
+					redraw = true;
+				}
+				continue; // dont process Submit as a shape
+			}
+
+			// skip invalid or duplicate clicks
+
+
 			if (row >= GRID_SIZE || col >= GRID_SIZE) continue;
 			if (board.isRevealed(row, col)) continue;
 			if (row == firstRow && col == firstCol) continue;
 
-			// Process click
+
+
+			// process guess clicks (first and second guesses)
 			if (firstRow == -1 && firstCol == -1) {
 				firstRow = row;
+
+
 				firstCol = col;
 				board.reveal(row, col);
 			}
 			else if (secondRow == -1 && secondCol == -1) {
 				secondRow = row;
 				secondCol = col;
+
+
 				board.reveal(row, col);
-				checkingMatch = true;
 			}
 
 			redraw = true;
 		}
 
+		//redraw graphics
 		if (redraw && al_is_event_queue_empty(event_queue)) {
+
+
 			redraw = false;
 
 			al_clear_to_color(al_map_rgb(0, 0, 0));
 
+
+
 			for (int i = 0; i < GRID_SIZE; ++i) {
+
 				for (int j = 0; j < GRID_SIZE; ++j) {
+
 					int cx = j * CELL_SIZE + CELL_SIZE / 2;
+
+
 					int cy = i * CELL_SIZE + CELL_SIZE / 2;
 
-					// draw border
+					// Special case for Submit cell
+
+
+					if (i == 4 && j == 4) {
+
+						// Fill bottom-right with green to indicate "Submit" area
+						al_draw_filled_rectangle(j * CELL_SIZE, i * CELL_SIZE,
+							(j + 1) * CELL_SIZE, (i + 1) * CELL_SIZE,
+							al_map_rgb(0, 255, 0));
+
+
+
+						// Draw border
+						al_draw_rectangle(j * CELL_SIZE, i * CELL_SIZE,
+							(j + 1) * CELL_SIZE, (i + 1) * CELL_SIZE,
+							al_map_rgb(255, 255, 255), 2);
+
+
+
+						// Add "Submit" label
+						al_draw_text(font, al_map_rgb(0, 0, 0),
+							cx, cy - 12, ALLEGRO_ALIGN_CENTER, "Submit");
+
+						continue; // Skip shape drawing for this cell
+					}
+
+
+					// Normal cell border
 					al_draw_rectangle(j * CELL_SIZE, i * CELL_SIZE,
 						(j + 1) * CELL_SIZE, (i + 1) * CELL_SIZE,
+
+
 						al_map_rgb(255, 255, 255), 2);
+
+
+
+					// Draw shape if revealed
+
 
 					if (board.isRevealed(i, j)) {
 						Shape shape = board.getShapeAt(i, j);
 						if (shape != EMPTY) {
 							drawShape(shape, cx, cy, CELL_SIZE * 0.6f);
 						}
+
+
 					}
 				}
+
+
+
+
+
 			}
+
+
 			al_draw_text(font, al_map_rgb(255, 255, 255), 10, 10, 0, "Memory Game");
+
+
+
 
 			int matched = board.getMatchedPairs();
 			int remaining = board.getRemainingPairs();
 
+
+
 			std::string status = "Matched: " + std::to_string(matched) + "\nLeft: " + std::to_string(remaining);
+
+
+
 
 			al_draw_text(font, al_map_rgb(255, 255, 255), SCREEN_WIDTH - 200, SCREEN_HEIGHT - 60, 0, status.c_str());
 
@@ -164,13 +254,20 @@ int main()
 
 
 			if (checkingMatch) {
+
+
 				Shape shape1 = board.getShapeAt(firstRow, firstCol);
+
+
+
 				Shape shape2 = board.getShapeAt(secondRow, secondCol);
 
 				if (board.compare(firstRow, firstCol, secondRow, secondCol)) {
+
 					board.incrementMatchCount();
 					std::cout << "Match.\n";
-					// keep both revealed
+
+					
 				}
 				else {
 					std::cout << "No match.\n";
@@ -184,6 +281,7 @@ int main()
 
 				if (board.allMatched()) {
 					std::cout << "All pairs matched. Resetting game.\n";
+
 					al_rest(2.0); // short pause
 					board.resetGame();
 				}
@@ -195,9 +293,12 @@ int main()
 				firstCol = -1;
 				secondRow = -1;
 				secondCol = -1;
+
 				checkingMatch = false;
 				redraw = true; // trigger redraw
 			}
+
+
 		}
 	}
 
